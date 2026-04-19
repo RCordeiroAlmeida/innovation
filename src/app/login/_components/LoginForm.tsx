@@ -1,129 +1,144 @@
-"use client"
+"use client";
 
-import { User, Lock} from "lucide-react";
+import { User, Lock } from "lucide-react";
 import Input from "./Input";
 import Checkbox from "./Checkbox";
 import Button from "./Button";
 import { useState } from "react";
+import { useAuthStore } from "@/store/useAuthState";
 
-export default function LoginForm(){
+import { api } from "@/app/lib/api";
 
-    const [formData, setFormData] = useState({
-        email: "",
-        senha: "",
-        lembrar: false
-    });
+import { useRouter } from "next/navigation";
+import axios from "axios";
+import Cookies from 'js-cookie';
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const{ name, value, type, checked} = e.target;
+export default function LoginForm() {
+  const login = useAuthStore((state) => state.setAuth);
+  const router = useRouter();
 
-        let currentError = ""
+  const [formData, setFormData] = useState({
+    email: "",
+    senha: "",
+    lembrar: false,
+  });
 
-        if (name === 'email' && value !== "") {
-            const emailRegex = /\S+@\S+\.\S+/;
-            if (!emailRegex.test(value)) {
-                currentError = "Insira um email válido";
-            }
-        }
+  const [errors, setErrors] = useState({
+    email: "",
+    senha: "",
+  });
 
-        if(name === 'senha' && value !== ""){
-            if(value.length < 6){
-                currentError = "A senha deve possuir no mínimo 6 caracteres"
-            }
-        }
+  const [loading, setLoading] = useState(false);
 
-        setErrors(prev => ({ ...prev, [name]: currentError }));
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value, type, checked } = e.target;
 
-        setFormData(prev => ({
-            ...prev,
-            [name]: type === 'checkbox' ? checked : value
-        }));
-    };
+    setErrors((prev) => ({ ...prev, [name]: "" }));
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        
-        if (validate()) {
-            console.log("Dados prontos para envio:", formData);
-        } else {
-            console.log("Erro na validação.");
-        }
-    };
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
-    // Validação mínima do formulário
-    const [errors, setErrors] = useState({
-        email: "",
-        senha: ""
-    })
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
 
-    const validate = () => {
-        const tempErrors = { email: "", senha: "" };
-        let isValid = true;
+    if (!validate()) return;
 
-        // Validação de Email (Regex simples)
-        const emailRegex = /\S+@\S+\.\S+/;
-        if (!formData.email) {
-            tempErrors.email = "O email é obrigatório.";
-            isValid = false;
-        } else if (!emailRegex.test(formData.email)) {
-            tempErrors.email = "Insira um email válido.";
-            isValid = false;
-        }
+    setLoading(true);
 
-        // Validação de Senha
-        if (!formData.senha) {
-            tempErrors.senha = "A senha não pode estar vazia.";
-            isValid = false;
-        } else if (formData.senha.length < 6) {
-            tempErrors.senha = "A senha deve ter pelo menos 6 caracteres.";
-            isValid = false;
-        }
+    try {
+      const response = await api.post("/login/acessar", {
+        email: formData.email,
+        senha: formData.senha,
+      });
 
-        setErrors(tempErrors);
-        return isValid;
-    };
+      if (response.data.status === 1) {
+        const { token_de_acesso, dados_usuario } = response.data;
 
+        login(dados_usuario, token_de_acesso);
+        Cookies.set('auth-token', token_de_acesso, { expires: 1 })
+        router.push("/produtos");
+      } else {
+        alert(response.data.message || "Dados inválidos");
+      }
+    } catch (err) {
+      if (axios.isAxiosError(err)) {
+        const message = err.response?.data?.message || "Erro na API";
+        alert(message);
+      } else {
+        alert("Ocorreu um erro inesperado.");
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    return(
-        <form onSubmit={handleSubmit}>
-            <div className="space-y-2">
-                <Input 
-                    name="email" 
-                    placeholder="Usuário" 
-                    icon={User} 
-                    onChange={handleChange}
-                    value={formData.email}
-                    error={errors.email}
-                />
+  const validate = () => {
+    const tempErrors = { email: "", senha: "" };
+    let isValid = true;
 
-                <Input 
-                    name="senha" 
-                    placeholder="Senha" 
-                    icon={Lock} 
-                    type="password"
-                    onChange={handleChange}
-                    value={formData.senha}
-                    error={errors.senha}
-                />
+    // Validação de Usuário
+    if (!formData.email.trim()) {
+      tempErrors.email = "O usuário é obrigatório.";
+      isValid = false;
+    }
 
-                <div className="flex justify-between">
-                    <Checkbox
-                        label={"Manter logado"}
-                        id="lembrar"
-                        name="lembrar"
-                        onChange={handleChange} checked={formData.lembrar}
-                    />
-                    <a href="#" className="ml-auto text-sm text-white dark:text-zinc-400 hover:underline">Esqueceu a senha?</a>
-                </div>
+    // Validação de Senha
+    if (!formData.senha) {
+      tempErrors.senha = "A senha não pode estar vazia.";
+      isValid = false;
+    }
 
-                <div className="flex justify-center">
-                    <Button type="submit">
-                        Login
-                    </Button>
-                </div>
-            </div>
+    setErrors(tempErrors);
+    return isValid;
+  };
 
-            
-        </form>
-    )
+  return (
+    <form onSubmit={handleSubmit}>
+      <div className="space-y-2">
+        <Input
+          name="email"
+          placeholder="Usuário"
+          icon={User}
+          onChange={handleChange}
+          value={formData.email}
+          error={errors.email}
+        />
+
+        <Input
+          name="senha"
+          placeholder="Senha"
+          icon={Lock}
+          type="password"
+          onChange={handleChange}
+          value={formData.senha}
+          error={errors.senha}
+        />
+
+        <div className="flex justify-between">
+          <Checkbox
+            label={"Manter logado"}
+            id="lembrar"
+            name="lembrar"
+            onChange={handleChange}
+            checked={formData.lembrar}
+          />
+          <a
+            href="#"
+            className="ml-auto text-sm text-white dark:text-zinc-400 hover:underline"
+          >
+            Esqueceu a senha?
+          </a>
+        </div>
+
+        <div className="flex justify-center">
+          <Button type="submit" isLoading={loading}>
+            Login
+          </Button>
+        </div>
+      </div>
+    </form>
+  );
 }
