@@ -12,10 +12,10 @@ export default function Login() {
         alt="Background" 
         fill 
         className="object-cover -z-20"
-        priority // Carrega a imagem imediatamente
+        priority 
       />
       
-      {/* Overlay para escurecer um pouco */}
+     
       <div className="absolute inset-0 bg-black/30 -z-10" />
 
       <h1 className="font-bold text-2xl text-lime-500 drop-shadow-md">
