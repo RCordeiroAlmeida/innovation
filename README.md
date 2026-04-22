@@ -1,36 +1,43 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Innovation App - Teste Técnico Next.js
+Esta é uma aplicação desenvolvida com Next.js 15+ e Tailwind CSS, focada em performance e escalabilidade, preparada para rodar em ambiente containerizado com Docker.
 
-## Getting Started
+Como Rodar a Aplicação
+Certifique-se de ter o Docker instalado em sua máquina.
 
-First, run the development server:
+Build da Imagem:
+docker build -t innovation-app .
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+Execução do Container:
+docker run -p 3000:3000 --name innovation-container innovation-app
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Acesso:
+Abra o navegador em http://localhost:3000
+Nota: A rota principal redireciona automaticamente para /login.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Decisões Técnicas
+Next.js (App Router): Utilizado pela facilidade de roteamento e otimização nativa de componentes do lado do servidor (SSR).
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Docker Multi-stage Build: O Dockerfile foi estruturado em duas etapas (Builder e Runner) para garantir que a imagem final seja leve, contendo apenas o necessário para a execução.
 
-## Learn More
+Node.js 20 (LTS): Escolhido para garantir total compatibilidade com as exigências do Next.js e bibliotecas modernas.
 
-To learn more about Next.js, take a look at the following resources:
+Redirects (next.config): Implementado redirecionamento via configuração do servidor para garantir que o fluxo de login seja a porta de entrada da aplicação.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+TypeScript: Utilizado para garantir a tipagem estática e evitar erros de interface.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+O que ficou pendente
+Testes Unitários: Implementação de suíte de testes com Jest para garantir a integridade dos componentes.
 
-## Deploy on Vercel
+Skeleton Screens: Substituição de loadings genéricos por skeletons para melhorar a experiência visual.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Refinamento de LCP: Otimização adicional de imagens para elevar a nota do Lighthouse acima de 95 pontos.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Performance e Fluxo
+Lighthouse (Desktop)
+Nota: O build foi realizado em modo de produção para garantir minificação de código.
+(Caminho da imagem: ./screenshots/lighthouse.png)
+
+Demonstração do Fluxo
+(Caminho do gif: ./screenshots/fluxo.gif)
+
+Desenvolvido por Rafael - 2026
