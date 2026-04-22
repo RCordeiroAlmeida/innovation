@@ -16,7 +16,8 @@ export function middleware(request: NextRequest) {
   return NextResponse.next();
 }
 
-// 3. Configura em quais rotas o middleware deve rodar
 export const config = {
-  matcher: ['/produtos/:path*', '/dashboard/:path*'],
+  matcher: [
+    '/produtos/:path*',
+  ],
 };

@@ -1,7 +1,7 @@
 "use client";
 
 import { User, Lock } from "lucide-react";
-import Input from "./Input";
+import Input from "../../../components/Input";
 import Checkbox from "./Checkbox";
 import Button from "./Button";
 import { useState } from "react";
@@ -79,13 +79,12 @@ export default function LoginForm() {
     const tempErrors = { email: "", senha: "" };
     let isValid = true;
 
-    // Validação de Usuário
+    
     if (!formData.email.trim()) {
       tempErrors.email = "O usuário é obrigatório.";
       isValid = false;
     }
 
-    // Validação de Senha
     if (!formData.senha) {
       tempErrors.senha = "A senha não pode estar vazia.";
       isValid = false;

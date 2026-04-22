@@ -15,7 +15,7 @@ export default function Button({
     ...rest 
 }: ButtonProps) {
     
-    // Definição das variantes de estilo
+    
     const variants = {
         primary: "bg-white text-zinc-600 hover:text-lime-500 shadow-sm",
         secondary: "bg-slate-800 text-white hover:bg-slate-900",
