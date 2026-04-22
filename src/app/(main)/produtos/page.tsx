@@ -13,7 +13,7 @@ interface IProduto {
   nome: string;
   referencia: string;
   imagem?: string;
-  preco: number;
+  preco: string;
   descricao: string;
 }
 

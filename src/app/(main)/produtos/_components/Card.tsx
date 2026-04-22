@@ -15,7 +15,7 @@ interface cardProps {
     codigo_categoria?: string
     imagem: string | StaticImageData
     descricao: string
-    preco: number
+    preco: string
 
     
     isFavorito: boolean
@@ -55,7 +55,6 @@ export default function Card({
 
                 <div className="border border-gray-400 rounded-lg p-4 flex flex-col h-[480px]">
 
-                    {/* 🔥 Imagem + favorito */}
                     <div className="relative h-52 shrink-0">
 
                         <Image
@@ -67,7 +66,6 @@ export default function Card({
 
                         <Badge descricao="exclusivo!" className="right-0 absolute" />
 
-                        {/* ❤️ Favorito */}
                         <button
                             onClick={() => onToggleFavorito(codigo)}
                             className="absolute top-2 left-2 z-10"
